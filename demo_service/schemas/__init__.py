@@ -14,6 +14,7 @@ from typing import (
 from tortoise.contrib.pydantic import PydanticModel
 
 from demo_service.libs.fastapi_rest_framework.schemas import BaseSerializerSchemas
+from settings import settings
 
 
 class GenericSerializerSchemas(BaseSerializerSchemas):
@@ -21,9 +22,7 @@ class GenericSerializerSchemas(BaseSerializerSchemas):
 
     @classmethod
     def get_models_paths(cls):
-        return [
-            'models',
-        ]
+        return ['demo_service.models']
 
 
 class BaseResponseMode(PydanticModel):

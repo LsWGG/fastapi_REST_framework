@@ -6,4 +6,4 @@
 @Time    ：2023/12/6 18:06
 @Desc    ：
 """
-from .demo_model import Tournament, Event, Team
+from .demo_model import Author, Book

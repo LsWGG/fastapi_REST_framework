@@ -16,24 +16,28 @@ class BaseSerializerSchemas(PydanticModel):
 
     def __new__(cls, *args, **kwargs):
         cls.model_init()
+
         # 根据模型类自动生成pedantic模型
         if hasattr(cls, "Meta"):
             meta_class = getattr(cls, "Meta")
             if hasattr(meta_class, "model"):
                 model_class = getattr(meta_class, "model")
-
+                fields = dict(name=cls.__name__)
                 if hasattr(cls, "PydanticMeta"):
                     model_class.PydanticMeta = getattr(cls, "PydanticMeta")
+                    for k, v in model_class.PydanticMeta.__dict__.items():
+                        if not k.startswith("__"):
+                            fields[k] = v
 
-                fields = {
-                    "name": cls.__name__
-                }
                 if hasattr(meta_class, "is_many"):
                     return cls.many_init(model_class, **fields)
                 else:
                     schema = cls.single_init(model_class, **fields)
-                schema.Config = getattr(cls, "Config")
-                return schema
+
+                    class A(cls, schema):
+                        pass
+
+                    return A
 
         else:
             return super().__new__(cls)

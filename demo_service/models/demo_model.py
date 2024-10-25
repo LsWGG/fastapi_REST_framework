@@ -10,39 +10,32 @@ from tortoise import fields
 from tortoise.models import Model
 
 
-class Tournament(Model):
-    id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=255)
+class Author(Model):
+    id = fields.IntField(pk=True, auto_increment=True)
+    name = fields.CharField(max_length=255, unique=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+    books = fields.ReverseRelation['Book']
 
     class Meta:
-        table = "tb_tournament"
-        table_description = "赛事表"
+        table = "author"
+        table_description = "作者信息表"
 
     def __str__(self):
         return self.name
 
 
-class Event(Model):
-    id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=255)
-    tournament = fields.ForeignKeyField('models.Tournament', related_name='events')
-    participants = fields.ManyToManyField('models.Team', related_name='events', through='event_team')
+class Book(Model):
+    id = fields.IntField(pk=True, auto_increment=True)
+    title = fields.CharField(max_length=255, unique=True)
+    author = fields.ForeignKeyField('models.Author', related_name='books', on_delete=fields.SET_NULL, null=True)
+    published_date = fields.DateField(null=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
 
     class Meta:
-        table = "tb_event"
-        table_description = "事件表"
+        table = "book"
+        table_description = "书籍信息表"
 
     def __str__(self):
-        return self.name
-
-
-class Team(Model):
-    id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=255)
-
-    class Meta:
-        table = "tb_team"
-        table_description = "组队信息表"
-
-    def __str__(self):
-        return self.name
+        return self.title

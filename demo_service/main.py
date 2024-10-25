@@ -13,4 +13,4 @@ from demo_service import create_app
 app = create_app()
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', port=8080, host='0.0.0.0', reload=False, proxy_headers=False)
+    uvicorn.run('main:app', port=8080, host='0.0.0.0', reload=True, proxy_headers=False)
