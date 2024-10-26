@@ -13,8 +13,6 @@ from tortoise.models import Model
 class Author(Model):
     id = fields.IntField(pk=True, auto_increment=True)
     name = fields.CharField(max_length=255, unique=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
     books = fields.ReverseRelation['Book']
 
     class Meta:
@@ -28,10 +26,9 @@ class Author(Model):
 class Book(Model):
     id = fields.IntField(pk=True, auto_increment=True)
     title = fields.CharField(max_length=255, unique=True)
-    author = fields.ForeignKeyField('models.Author', related_name='books', on_delete=fields.SET_NULL, null=True)
-    published_date = fields.DateField(null=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
+    author = fields.ForeignKeyField(
+        'models.Author', related_name='books', on_delete=fields.SET_NULL, null=True
+    )
 
     class Meta:
         table = "book"

@@ -23,19 +23,3 @@ class GenericSerializerSchemas(BaseSerializerSchemas):
     @classmethod
     def get_models_paths(cls):
         return ['demo_service.models']
-
-
-class BaseResponseMode(PydanticModel):
-    __doc__ = "基础响应模型类"
-
-    data: Union[str, dict, None]
-    message: Union[str, dict, None]
-    code: int
-
-
-class BaseResponseListSchema(PydanticModel):
-    class ListData(PydanticModel):
-        data: Union[str, dict, None]
-        count: int
-
-    data: ListData

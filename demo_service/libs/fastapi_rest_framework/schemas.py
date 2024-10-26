@@ -6,6 +6,8 @@
 @Time    ：2022/3/8 10:13 上午
 @Desc    ：
 """
+from typing import Union
+
 from tortoise import Tortoise
 from tortoise.contrib.pydantic import PydanticModel, pydantic_model_creator, pydantic_queryset_creator
 
@@ -33,21 +35,18 @@ class BaseSerializerSchemas(PydanticModel):
                     return cls.many_init(model_class, **fields)
                 else:
                     schema = cls.single_init(model_class, **fields)
-
-                    class A(cls, schema):
-                        pass
-
-                    return A
+                    return schema
 
         else:
             return super().__new__(cls)
 
     @classmethod
+    def get_models_paths(cls):
+        return ["__main__"]
+
+    @classmethod
     def model_init(cls):
-        if hasattr(cls, 'get_models_paths'):
-            return Tortoise.init_models(cls.get_models_paths(), "models")
-        else:
-            return Tortoise.init_models(["__main__"], "models")
+        return Tortoise.init_models(cls.get_models_paths(), "models")
 
     @classmethod
     def many_init(cls, model_class, **kwargs):
@@ -59,4 +58,21 @@ class BaseSerializerSchemas(PydanticModel):
         return pydantic_model_creator(model_class, model_config=cls.Config.__dict__, **kwargs)
 
     class Config:
-        error_msg_templates = ERROR_MSG_TEMPLATE
+        pass
+        # error_msg_templates = ERROR_MSG_TEMPLATE
+
+
+class BaseResponseMode(PydanticModel):
+    __doc__ = "基础响应模型类"
+
+    data: Union[str, dict, None]
+    message: Union[str, dict, None]
+    code: int
+
+
+class BaseResponseListSchema(PydanticModel):
+    class ListData(PydanticModel):
+        data: Union[str, dict, None]
+        count: int
+
+    data: ListData

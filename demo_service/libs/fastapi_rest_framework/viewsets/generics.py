@@ -9,7 +9,8 @@
 from fastapi.requests import Request
 from tortoise import Model
 
-from .helper import get_object_or_404
+from .helper import get_object_or_404, get_backward_rel_keys, get_model_name
+from ..utils.generice_schema import GenericSchema
 from ..utils.response import dict_response
 
 
@@ -27,6 +28,9 @@ class GenericAPIMixin:
 
     # 模型类
     model: Model = None
+    # Schema生成类
+    generic_schema = None
+
     # 默认Schema类：用于请求校验
     schema_class = None
     # 默认响应模型：用于定义响应格式
@@ -75,9 +79,9 @@ class GenericAPIMixin:
 
     @classmethod
     def get_schema_class(cls, action, _type):
-        assert (cls.schema_class and cls.response_model), (
-            f"{cls.__name__} should either include schema_class and response_model attribute. "
-        )
+        if not cls.schema_class and not cls.response_model:
+            gen_schema_obj = GenericSchema(cls.model)
+            gen_schema_obj.init_schema(cls)
 
         if hasattr(cls, action + "_" + _type):
             return getattr(cls, action + "_" + _type)
@@ -87,3 +91,28 @@ class GenericAPIMixin:
     @classmethod
     def format_response(cls, *args, **kwargs):
         return dict_response(*args, **kwargs)
+
+    @classmethod
+    def format_validated_data(cls, validated_data):
+        """
+        格式化请求字段，返回主数据和关联数据
+        """
+        relation_data = {}
+        relation_keys = get_backward_rel_keys(cls.model)
+        if relation_keys:
+            validated_data_dict = validated_data.dict()
+            for key in relation_keys:
+                if not hasattr(validated_data, key):
+                    continue
+
+                rel_data = getattr(validated_data, key)
+                if not rel_data:
+                    validated_data_dict.pop(key)
+                    continue
+                relation_data.setdefault(f"{get_model_name(cls.model, key)}__{key}", []).extend(
+                    validated_data_dict.pop(key)
+                )
+        else:
+            validated_data_dict = validated_data.dict()
+
+        return validated_data_dict, relation_data

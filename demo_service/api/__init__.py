@@ -6,10 +6,9 @@
 @Time    ：2023/12/7 09:30
 @Desc    ：
 """
-from demo_service.api.base_api import AuthorViewSet, BookViewSet
+from demo_service.api.base_api import AuthorViewSet
 from demo_service.libs.fastapi_rest_framework.router import MainRouter
 
 routers = [
     MainRouter(prefix="/author", tags=["作者"]).is_view(AuthorViewSet),
-    MainRouter(prefix="/book", tags=["书籍"]).is_view(BookViewSet),
 ]
