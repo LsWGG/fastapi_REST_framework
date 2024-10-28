@@ -4,10 +4,11 @@
 @Author  ：LiShun
 @File    ：generics.py
 @Time    ：2022/3/8 3:32 下午
-@Desc    ：常用视图，待补充
+@Desc    ：常用视图
 """
-from fastapi.requests import Request
 from tortoise import Model
+from fastapi.requests import Request
+from starlette.datastructures import QueryParams
 
 from .helper import get_object_or_404, get_backward_rel_keys, get_model_name
 from ..utils.generice_schema import GenericSchema
@@ -91,6 +92,17 @@ class GenericAPIMixin:
     @classmethod
     def format_response(cls, *args, **kwargs):
         return dict_response(*args, **kwargs)
+
+    @classmethod
+    def filter_model_files(cls, query_params: QueryParams):
+        filters = {}
+        for param in query_params:
+            if param in cls.model._meta.fields:
+                filters[param] = query_params[param]
+            if "__" in param:
+                filters[param] = query_params[param]
+
+        return filters
 
     @classmethod
     def format_validated_data(cls, validated_data):

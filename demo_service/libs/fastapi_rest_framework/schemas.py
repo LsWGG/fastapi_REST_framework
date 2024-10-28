@@ -9,6 +9,7 @@
 from typing import Union
 
 from tortoise import Tortoise
+from tortoise.contrib.pydantic import PydanticModel
 from tortoise.contrib.pydantic import PydanticModel, pydantic_model_creator, pydantic_queryset_creator
 
 from .utils.error_msg import ERROR_MSG_TEMPLATE

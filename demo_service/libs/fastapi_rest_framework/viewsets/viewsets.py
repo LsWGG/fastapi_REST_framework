@@ -39,3 +39,16 @@ class ModelViewSet(mixins.CreateModelMixin,
     `destroy()` and `list()` actions.
     """
     pass
+
+
+class CreateOrUpdateModelViewSet(
+    mixins.CreateOrUpdateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    GenericViewSet
+):
+    """
+    A viewset that provides default `create_or_update()`, `retrieve()`, `destroy()` and `list()` actions.
+    """
+    pass

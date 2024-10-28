@@ -28,6 +28,16 @@ class MainRouter(APIRouter):
 
         pk_path = self._build_single_obj_path(base_path, lookup_field, lookup_type)
 
+        if hasattr(view, 'create_or_update'):
+            method = self.post(
+                path=base_path,
+                response_model=getattr(view, 'get_response_model')("create_or_update"),
+                tags=tags,
+                name=tags[0] + " >> POST Create Or Update" if tags else "POST Create Or Update",
+                **kwargs
+            )
+            method(view.create_or_update)
+
         if hasattr(view, 'create'):
             method = self.post(
                 path=base_path,
@@ -79,4 +89,5 @@ class MainRouter(APIRouter):
                 **kwargs
             )
             method(view.destroy)
+
         return self

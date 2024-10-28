@@ -1,12 +1,13 @@
 from typing import Union
-from pydantic import BaseModel
+
+from tortoise import Model
 from tortoise.contrib.pydantic import PydanticModel
 
 from ..schemas import BaseSerializerSchemas, BaseResponseMode, BaseResponseListSchema
 
 
 class GenericSchema:
-    def __init__(self, model: BaseModel):
+    def __init__(self, model: Model):
         self.model = model
         self.generated_field = tuple(self.get_generated_fields())
 

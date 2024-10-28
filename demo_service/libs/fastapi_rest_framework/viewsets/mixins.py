@@ -28,6 +28,22 @@ class CreateModelMixin:
             )
 
 
+class CreateOrUpdateModelMixin:
+    """
+    Create or update a model instance.
+    """
+
+    def __init_subclass__(cls: generics.GenericAPIMixin, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if not is_method_overloaded(cls, 'create_or_update') and cls.model:
+            cls.create_or_update = classmethod(
+                MakeMixin.make_create_or_update(
+                    schema_class=cls.get_schema('create_or_update'),
+                    get_current_user=cls.current_user
+                )
+            )
+
+
 class ListModelMixin:
     """
     List a queryset.
